@@ -55,14 +55,10 @@ jobs:
           luceeVersionQuery: ${{ matrix.luceeVersion }}
         env:
           fetch: ${{ matrix.luceeVersion }}
-      - name: Run Express
+      - name: Test REST Mapping
         run: |
-          export LUCEE_EXTENSIONS="DF28D0A4-6748-44B9-A2FDC12E4E2E4D38"
-          printenv LUCEE_EXTENSIONS
-          ./express/bin/startup.sh
-          echo "sleeping for 10s to allow lucee to deploy and startup...."
-          sleep 10
-          curl http://127.0.0.1:8888
+          echo "Testing REST mapping..."
+          curl -X GET http://127.0.0.1:8888/rest/rest/test/ext
       - name: Checkout Lucee
         uses: actions/checkout@v4
         with:
@@ -74,10 +70,9 @@ jobs:
           webroot: ${{ github.workspace }}/lucee/test
           execute: /bootstrap-tests.cfm
           luceeVersionQuery: ${{ matrix.luceeVersion }}
-          extensions: DF28D0A4-6748-44B9-A2FDC12E4E2E4D38 # axis ext
         env:
           testLabels: axis
-          testAdditional: ${{ github.workspace }}/custom/axis/tests
+          testAdditional: ${{ github.workspace }}/custom/rest/test
       - name: Debug Express exception.log
         if: failure()
         run: |
