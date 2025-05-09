@@ -1,0 +1,62 @@
+name: Check Zac's admin Extensions
+
+on:
+  workflow_dispatch:
+  workflow_call:
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        luceeVersion:
+          [
+            5.4/snapshot/jar,
+            6.0/snapshot/jar,
+            6.1/snapshot/jar,
+            6.1.0/snapshot/jar,
+            6.2/snapshot/jar
+          ]
+        javaVersion: [ 11 ]
+    env:
+        luceeVersionQuery: ${{ matrix.luceeVersion }}
+        compile: ${{ github.event.inputs.compile }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          path: _custom
+      - name: Checkout Lucee
+        uses: actions/checkout@v4
+        with:
+          repository: lucee/lucee
+          path: lucee
+      - name: Set up JDK ${{matrix.javaVersion}}
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{matrix.javaVersion}}
+          distribution: "temurin"
+
+      - name: Cache Maven packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2
+          key: maven-cache
+      - name: Cache Lucee files
+        if: always()
+        uses: actions/cache@v4
+        with:
+          path: /home/runner/work/_actions/lucee/script-runner/main/lucee-download-cache
+          key: lucee-downloads
+
+      - name: Check Zac's admin plugins as they often catch regressions
+        uses: lucee/script-runner@main
+        with:
+          webroot: ${{ github.workspace }}/lucee/test
+          execute: /bootstrap-tests.cfm
+          luceeVersionQuery: ${{ matrix.luceeVersion }}
+          extensions: 91AF5D75-8CEF-4510-A170240C401F5FBA,A345C8CB-04CC-4D2B-93D50471D5105D83 # log viewer, performance analyzer
+        env:
+          testFilter: adminPages
+          LUCEE_BASE_CONFIGzzzz: ${{ github.workspace }}/_custom/custom/bad-cfconfig/.CFConfig-good-debug.json
