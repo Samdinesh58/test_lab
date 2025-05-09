@@ -1,0 +1,130 @@
+name: Loader Checks
+
+on:
+  workflow_dispatch:
+    inputs:
+      lucee_versions:
+        required: false
+        description: Lucee Versions (json)
+        default: '[ "6.2/all/jar", "5.4/all/jar" ]'
+        type: string
+  workflow_call:
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix:
+        luceeVersion: ${{ fromJSON(github.event.inputs.lucee_versions) }}
+        javaVersion: [ 11 ]
+    env:
+        luceeVersionQuery: ${{ matrix.luceeVersion }}
+        compile: ${{ github.event.inputs.compile }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up JDK 11
+        if: ${{ matrix.luceeVersion == '5.4/all/jar' }}
+        uses: actions/setup-java@v4
+        with:
+          java-version: 11
+          distribution: "temurin"
+      - name: Set up JDK 21
+        if: ${{ matrix.luceeVersion != '5.4/all/jar' }}
+        uses: actions/setup-java@v4
+        with:
+          java-version: 21
+          distribution: "temurin"
+      - name: Cache Maven packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2
+          key: maven-cache
+      - name: Cache Lucee files
+        uses: actions/cache@v4
+        if: always()
+        with:
+          path: /home/runner/work/_actions/lucee/script-runner/main/lucee-download-cache
+          key: lucee-downloads
+      - name: Cache Lucee Express files
+        uses: actions/cache@v4
+        if: always()
+        with:
+          path: /home/runner/work/lucee-testlab/lucee-testlab/lucee-express-cache/
+          key: lucee-express
+      - name: Download Lucee Express
+        uses: lucee/script-runner@main
+        with:
+          webroot: ${{ github.workspace }}/custom/axis
+          execute: /fetch-express.cfm
+          luceeVersionQuery: ${{ matrix.luceeVersion }}
+        env:
+          fetch: ${{ matrix.luceeVersion }}
+      - name: Run Express, shutdown, deploy 7 core, startup again
+        run: |
+          export LUCEE_LOGGING_FORCE_LEVEL="trace"
+          echo "#### ${{ matrix.luceeVersion }}" >> $GITHUB_STEP_SUMMARY
+          echo "<cfoutput>###### Lucee Linux #server.lucee.version#, using Java #server.java.version##chr(10)####### Running on #server.servlet.name#, OS #server.os.version# #server.os.arch# #chr(10)##now()#</cfoutput>" > express/webapps/ROOT/check.cfm
+          ./express/bin/startup.sh
+          echo "sleeping for 10s to allow lucee to deploy and startup...."
+          sleep 5
+          curl http://127.0.0.1:8888/check.cfm --fail-with-body >> $GITHUB_STEP_SUMMARY
+          echo "stopping lucee, sleep 5 ...."
+          ./express/bin/shutdown.sh
+          sleep 5
+          echo "downloading 7 core lco into /deploy"
+          curl --fail https://cdn.lucee.org/7.0.0.227-SNAPSHOT.lco -o ./express/lucee-server/deploy/7.0.0.227-SNAPSHOT.lco -s
+          ls -lRH ./express/lucee-server/deploy >> $GITHUB_STEP_SUMMARY
+          ./express/bin/startup.sh
+          echo "sleeping for 10s to allow lucee to re-deploy and startup...."
+          sleep 10
+          curl http://127.0.0.1:8888/check.cfm --fail-with-body >> $GITHUB_STEP_SUMMARY
+          ./express/bin/shutdown.sh
+          ls -lRH ./express/lucee-server/deploy >> $GITHUB_STEP_SUMMARY
+          ls -lRH ./express/lucee-server/patches >> $GITHUB_STEP_SUMMARY
+          echo "stopping lucee again, sleep 5 ...."
+          ./express/bin/shutdown.sh
+          sleep 5
+          ./express/bin/startup.sh
+          echo "sleeping for 10s to allow lucee to startup again...."
+          sleep 10
+          curl http://127.0.0.1:8888/check.cfm --fail-with-body >> $GITHUB_STEP_SUMMARY
+          ./express/bin/shutdown.sh
+      - name: Tomcat Logs
+        if: ${{ always() }}
+        run: |
+            sudo ls -l express/logs/
+            echo ""
+            echo "----- catalina.out"
+            sudo [ -r express/logs/catalina.out ] && sudo cat express/logs/catalina.out
+      - name: Debug Express deploy.log
+        if: always()
+        run: |
+            echo "## deploy.log" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            cat express/lucee-server/context/logs/deploy.log | tee -a $GITHUB_STEP_SUMMARY
+      - name: Debug Express exception.log
+        if: always()
+        run: |
+            echo "------exception.log----------"
+            cat express/lucee-server/context/logs/exception.log
+            if [ -f "express/webapps/ROOT/WEB-INF/lucee/logs/exception.log" ]; then
+                echo "------web exception.log 5.4 ----------"
+                cat express/webapps/ROOT/WEB-INF/lucee/logs/exception.log
+            fi
+            echo "------application.log----------"
+            cat express/lucee-server/context/logs/application.log
+            echo ""
+            echo "------out.log----------"
+            cat express/lucee-server/context/logs/out.log
+            echo ""
+            if [ -f "express/lucee-server/context/logs/err.log" ]; then
+                echo "------err.log----------"
+                cat express/lucee-server/context/logs/err.log
+            fi
+      - name: Debug filesystem
+        if: always()
+        run: |
+            ls -lRH express
