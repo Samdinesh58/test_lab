@@ -1,4 +1,4 @@
-name: test rest mapping
+name: rest test
 
 on:
   workflow_dispatch:
@@ -55,30 +55,12 @@ jobs:
           luceeVersionQuery: ${{ matrix.luceeVersion }}
         env:
           fetch: ${{ matrix.luceeVersion }}
-      - name: Wait for Server to Start
-        run: sleep 10
-      - name: Verify Server is Running
+      - name: Run Express
         run: |
-          echo "Checking if server is running..."
-          curl -I http://127.0.0.1:8888 || exit 1
-      - name: Debug REST Endpoint
-        run: |
-          echo "Debugging REST endpoint..."
-          curl -v http://127.0.0.1:8888/rest/test/ext
-      - name: Test REST Mapping
-        run: |
-          echo "Testing REST mapping..."
-          response=$(curl -s -X GET http://127.0.0.1:8888/rest/test/ext || echo "error")
-          echo "Response: $response"
-          if [ "$response" == "error" ]; then
-            echo "REST test failed: Unable to connect to server!"
-            exit 1
-          fi
-          if [ "$response" != "hi" ]; then
-            echo "REST test failed: Unexpected response!"
-            exit 1
-          fi
-          echo "REST test passed!"
+          ./express/bin/startup.sh
+          echo "sleeping for 10s to allow lucee to deploy and startup...."
+          sleep 10
+          curl http://127.0.0.1:8888/rest/test/ext
       - name: Checkout Lucee
         uses: actions/checkout@v4
         with:
