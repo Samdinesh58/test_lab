@@ -1,13 +1,7 @@
-name: rest test
+name: test rest
 
 on:
   workflow_dispatch:
-    inputs:
-      lucee_versions:
-        required: false
-        description: Lucee Versions (json)
-        default: '[ "7.0/snapshot/jar", "6.2/snapshot/jar", "6.2/stable/jar" ]'
-        type: string
   workflow_call:
 
 jobs:
@@ -15,10 +9,16 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
-      max-parallel: 1
       matrix:
-        luceeVersion: ${{ fromJSON(github.event.inputs.lucee_versions) }}
-        javaVersion: [ 21 ]
+        luceeVersion:
+          [
+            5.4/snapshot/jar,
+            6.0/snapshot/jar,
+            6.1/snapshot/jar,
+            6.1.0/snapshot/jar,
+            6.2/snapshot/jar,
+          ]
+        javaVersion: [ 11 ]
     env:
         luceeVersionQuery: ${{ matrix.luceeVersion }}
         compile: ${{ github.event.inputs.compile }}
@@ -31,6 +31,7 @@ jobs:
           java-version: ${{matrix.javaVersion}}
           distribution: "temurin"
       - name: Cache Maven packages
+        if: always()
         uses: actions/cache@v4
         with:
           path: ~/.m2
@@ -41,44 +42,15 @@ jobs:
         with:
           path: /home/runner/work/_actions/lucee/script-runner/main/lucee-download-cache
           key: lucee-downloads
-      - name: Cache Lucee Express files
-        uses: actions/cache@v4
-        if: always()
-        with:
-          path: /home/runner/work/lucee-testlab/lucee-testlab/lucee-express-cache/
-          key: lucee-express
-      - name: Download Lucee Express
+      - name: Load Lucee and extensions with LUCEE_ENABLE_BUNDLE_DOWNLOAD disabled
         uses: lucee/script-runner@main
         with:
-          webroot: ${{ github.workspace }}/custom/axis
-          execute: /fetch-express.cfm
+          webroot: ${{ github.workspace }}/custom/rest/test
+          execute: http://127.0.0.1:8888/rest/test/ext
           luceeVersionQuery: ${{ matrix.luceeVersion }}
         env:
-          fetch: ${{ matrix.luceeVersion }}
-      - name: Run Express
-        run: |
-          ./express/bin/startup.sh
-          echo "sleeping for 10s to allow lucee to deploy and startup...."
-          sleep 10
-          curl http://127.0.0.1:8888/rest/test/ext
-      - name: Checkout Lucee
-        uses: actions/checkout@v4
-        with:
-          repository: lucee/lucee
-          path: lucee
-      - name: Run Lucee Test Suite
-        uses: lucee/script-runner@main
-        with:
-          webroot: ${{ github.workspace }}/lucee/test
-          execute: /bootstrap-tests.cfm
-          luceeVersionQuery: ${{ matrix.luceeVersion }}
-          extensions: DF28D0A4-6748-44B9-A2FDC12E4E2E4D38 # axis ext
-        env:
-          testLabels: rest
-      - name: Debug Express exception.log
-        if: failure()
-        run: |
-            echo "------deploy.log----------"
-            cat express/lucee-server/context/logs/deploy.log
-            echo "------exception.log----------"
-            cat express/lucee-server/context/logs/exception.log
+          LUCEE_CLI_PRINTEXCEPTIONS: TRUE
+          LUCEE_ENABLE_BUNDLE_DOWNLOAD: FALSE
+          LUCEE_ADMIN_DEFAULT_PASSWORD: password
+          LUCEE_ADMIN_PASSWORD: password
+  
