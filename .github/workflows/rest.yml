@@ -1,4 +1,4 @@
-name: Rest tests
+name: test rest mapping
 
 on:
   workflow_dispatch:
@@ -35,27 +35,33 @@ jobs:
         with:
           path: ~/.m2
           key: maven-cache
-      - name: Start Lucee Server
-        run: |
-          echo "Starting Lucee server..."
-          ./start.sh # or start.bat for Windows
-      - name: Wait for Server to Start
-        run: sleep 10
-      - name: Verify Server is Running
-        run: |
-          echo "Checking if server is running..."
-          curl -I http://127.0.0.1:8888 || exit 1
+      - name: Cache Lucee files
+        uses: actions/cache@v4
+        if: always()
+        with:
+          path: /home/runner/work/_actions/lucee/script-runner/main/lucee-download-cache
+          key: lucee-downloads
+      - name: Cache Lucee Express files
+        uses: actions/cache@v4
+        if: always()
+        with:
+          path: /home/runner/work/lucee-testlab/lucee-testlab/lucee-express-cache/
+          key: lucee-express
+      - name: Download Lucee Express
+        uses: lucee/script-runner@main
+        with:
+          webroot: ${{ github.workspace }}/custom/axis
+          execute: /fetch-express.cfm
+          luceeVersionQuery: ${{ matrix.luceeVersion }}
+        env:
+          fetch: ${{ matrix.luceeVersion }}
       - name: Test REST Mapping
         run: |
           echo "Testing REST mapping..."
-          response=$(curl -s -X GET http://127.0.0.1:8888/rest/test/ext || echo "error")
+          response=$(curl -s -X GET http://127.0.0.1:8888/rest/test/ext)
           echo "Response: $response"
-          if [ "$response" == "error" ]; then
-            echo "REST test failed: Unable to connect to server!"
-            exit 1
-          fi
           if [ "$response" != "hi" ]; then
-            echo "REST test failed: Unexpected response!"
+            echo "REST test failed!"
             exit 1
           fi
           echo "REST test passed!"
@@ -70,3 +76,14 @@ jobs:
           webroot: ${{ github.workspace }}/lucee/test
           execute: /bootstrap-tests.cfm
           luceeVersionQuery: ${{ matrix.luceeVersion }}
+          extensions: DF28D0A4-6748-44B9-A2FDC12E4E2E4D38 # axis ext
+        env:
+          testLabels: rest
+          testAdditional: ${{ github.workspace }}/custom/rest/test
+      - name: Debug Express exception.log
+        if: failure()
+        run: |
+            echo "------deploy.log----------"
+            cat express/lucee-server/context/logs/deploy.log
+            echo "------exception.log----------"
+            cat express/lucee-server/context/logs/exception.log
