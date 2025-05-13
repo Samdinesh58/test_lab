@@ -47,6 +47,9 @@ jobs:
         with:
           path: /home/runner/work/lucee-testlab/lucee-testlab/lucee-express-cache/
           key: lucee-express
+      - name: Debug Lucee Version
+        run: |
+          echo "Lucee Version Query: ${{ matrix.luceeVersion }}"   
       - name: Download Lucee Express
         uses: lucee/script-runner@main
         env:
