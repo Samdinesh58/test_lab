@@ -75,7 +75,6 @@ jobs:
           extensions: DF28D0A4-6748-44B9-A2FDC12E4E2E4D38 # axis ext
         env:
           testLabels: rest
-          testAdditional: ${{ github.workspace }}/custom/rest/test
       - name: Debug Express exception.log
         if: failure()
         run: |
