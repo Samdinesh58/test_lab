@@ -1,4 +1,4 @@
-name: Rest tests (placeholder)
+name: Rest tests
 
 on:
   workflow_dispatch:
@@ -54,11 +54,21 @@ jobs:
           execute: /fetch-express.cfm
           luceeVersionQuery: ${{ matrix.luceeVersion }}
         env:
-          fetch: ${{ matrix.luceeVersion }}
+          luceeVersionQuery: ${{ matrix.luceeVersion }}
       - name: Test REST Mapping
         run: |
           echo "Testing REST mapping..."
-          curl -X GET http://127.0.0.1:8888/rest/rest/test/ext
+          response=$(curl -s -X GET http://127.0.0.1:8888/rest/test/ext || echo "error")
+          echo "Response: $response"
+          if [ "$response" == "error" ]; then
+            echo "REST test failed: Unable to connect to server!"
+            exit 1
+          fi
+          if [ "$response" != "hi" ]; then
+            echo "REST test failed: Unexpected response!"
+            exit 1
+          fi
+          echo "REST test passed!"
       - name: Checkout Lucee
         uses: actions/checkout@v4
         with:
@@ -70,13 +80,3 @@ jobs:
           webroot: ${{ github.workspace }}/lucee/test
           execute: /bootstrap-tests.cfm
           luceeVersionQuery: ${{ matrix.luceeVersion }}
-        env:
-          testLabels: axis
-          testAdditional: ${{ github.workspace }}/custom/rest/test
-      - name: Debug Express exception.log
-        if: failure()
-        run: |
-            echo "------deploy.log----------"
-            cat express/lucee-server/context/logs/deploy.log
-            echo "------exception.log----------"
-            cat express/lucee-server/context/logs/exception.log
