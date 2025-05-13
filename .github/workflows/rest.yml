@@ -55,17 +55,6 @@ jobs:
           luceeVersionQuery: ${{ matrix.luceeVersion }}
         env:
           fetch: ${{ matrix.luceeVersion }}
-      - name: Download and Extract Lucee Express
-        run: |
-          echo "Downloading Lucee Express..."
-          curl -L -o lucee-express.zip https://cdn.lucee.org/lucee-express.zip
-          echo "Extracting Lucee Express..."
-          unzip lucee-express.zip -d lucee-express
-      - name: Start Lucee Server
-        run: |
-          echo "Starting Lucee server..."
-          cd lucee-express/lucee-express-*
-          ./start.sh
       - name: Wait for Server to Start
         run: sleep 10
       - name: Verify Server is Running
