@@ -41,19 +41,6 @@ jobs:
         with:
           path: /home/runner/work/_actions/lucee/script-runner/main/lucee-download-cache
           key: lucee-downloads
-      - name: Cache Lucee Express files
-        uses: actions/cache@v4
-        if: always()
-        with:
-          path: /home/runner/work/lucee-testlab/lucee-testlab/lucee-express-cache/
-          key: lucee-express
-      - name: Debug Lucee Version
-        run: |
-          echo "Lucee Version Query: ${{ matrix.luceeVersion }}"   
-      - name: Download Lucee Express
-        uses: lucee/script-runner@main
-        env:
-          luceeVersionQuery: ${{ matrix.luceeVersion }}
       - name: Test REST Mapping
         run: |
           echo "Testing REST mapping..."
