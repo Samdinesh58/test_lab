@@ -2,7 +2,7 @@ component {
 
     this.name = "wd";
     this.sessionManagement = true;
-    request.SERVERADMINPASSWORD = createObject("java", "java.lang.System").getenv("SERVERADMINPASSWORD");
+    request.SERVERADMINPASSWORD = "password";
     configImport({
             "password": "password"
         }, "server", "admin");
