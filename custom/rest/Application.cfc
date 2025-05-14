@@ -6,7 +6,7 @@ component {
     // The onApplicationStart() method should be properly placed inside the component.
     function onApplicationStart() {
 echo(expandPath('/test'))
-        RestInitApplication(dirpath=expandPath('test/'), serviceMapping='test', default="true", password="#request.SERVERADMINPASSWORD#");
+        RestInitApplication(dirpath=expandPath('test/'), serviceMapping='test', default="true", password="webweb");
     }
 
 }
