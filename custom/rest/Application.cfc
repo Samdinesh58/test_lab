@@ -11,6 +11,5 @@ component {
       default = true,
       password = request.SERVERADMINPASSWORD
     );
-  
+  }
 }
-
