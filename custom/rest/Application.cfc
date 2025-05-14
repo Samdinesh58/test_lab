@@ -1,15 +1,15 @@
 component {
+  function onApplicationStart() {
+    // Retrieve GitHub secret from environment variable
+    request.SERVERADMINPASSWORD = createObject("java", "java.lang.System")
+      .getenv("SERVERADMIN_PASSWORD");
+    
+    // Initialize REST app
+    RestInitApplication(
+      dirpath = expandPath("test/"),
+      serviceMapping = "test",
+      default = true,
+      password = request.SERVERADMINPASSWORD
+    );
+  }
 
-    this.name = "wd";
-    this.sessionManagement = true;
-    request.SERVERADMINPASSWORD = "password";
-    configImport({
-            "password": "password"
-        }, "server", "admin");
-    // The onApplicationStart() method should be properly placed inside the component.
-    function onApplicationStart() {
-echo(expandPath('/test'))
-        RestInitApplication(dirpath=expandPath('test/'), serviceMapping='test', default="true", password="#request.SERVERADMINPASSWORD#");
-    }
-
-}
