@@ -54,9 +54,6 @@ jobs:
           SERVERADMINPASSWORD: password
           # LUCEE_ADMIN_DEFAULT_PASSWORD: password
           # LUCEE_ADMIN_PASSWORD: password
-      - name: Execute CFML
-        env:
-        SERVERADMIN_PASSWORD: ${{ secrets.SERVERADMIN_PASSWORD }} # Map secret to
       - name: Debug Server Logs
         run: |
           echo "------deploy.log----------"
