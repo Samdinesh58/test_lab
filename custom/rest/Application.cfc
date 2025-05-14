@@ -5,7 +5,8 @@ component {
     request.SERVERADMINPASSWORD = "password";
     // The onApplicationStart() method should be properly placed inside the component.
     function onApplicationStart() {
-        RestInitApplication(dirpath="/home/runner/work/test_lab/custom/rest/test", serviceMapping='test', default="true", password="#request.SERVERADMINPASSWORD#");
+writeOutput(expandPath('/test'))
+        RestInitApplication(dirpath=expandPath('test/'), serviceMapping='test', default="true", password="#request.SERVERADMINPASSWORD#");
     }
 
 }
