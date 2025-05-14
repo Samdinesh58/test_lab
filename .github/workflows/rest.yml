@@ -7,8 +7,8 @@ on:
 jobs:
   tests:
     runs-on: ubuntu-latest
-    env:
-      SERVERADMIN_PASSWORD: ${{ secrets.SERVERADMIN_PASSWORD }}
+  env:
+    SERVERADMIN_PASSWORD: ${{ secrets.SERVERADMIN_PASSWORD }}
     strategy:
       fail-fast: false
       matrix:
