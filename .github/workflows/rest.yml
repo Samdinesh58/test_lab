@@ -52,12 +52,11 @@ jobs:
           LUCEE_CLI_PRINTEXCEPTIONS: TRUE
           LUCEE_ENABLE_BUNDLE_DOWNLOAD: FALSE
           SERVERADMINPASSWORD: ${{ secrets.SERVERADMIN_PASSWORD }}
-          # LUCEE_ADMIN_DEFAULT_PASSWORD: password
-          # LUCEE_ADMIN_PASSWORD: password
+      - name: Check environment variables (debug)
+        run: echo "SERVERADMINPASSWORD is set: $SERVERADMINPASSWORD"
       - name: Debug Server Logs
         run: |
           echo "------deploy.log----------"
           cat express/lucee-server/context/logs/deploy.log
           echo "------exception.log----------"
           cat express/lucee-server/context/logs/exception.log
-  
