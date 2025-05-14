@@ -25,23 +25,27 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Set up JDK ${{matrix.javaVersion}}
+
+      - name: Set up JDK ${{ matrix.javaVersion }}
         uses: actions/setup-java@v4
         with:
-          java-version: ${{matrix.javaVersion}}
+          java-version: ${{ matrix.javaVersion }}
           distribution: "temurin"
+
       - name: Cache Maven packages
         if: always()
         uses: actions/cache@v4
         with:
           path: ~/.m2
           key: maven-cache
+
       - name: Cache Lucee files
         uses: actions/cache@v4
         if: always()
         with:
           path: /home/runner/work/_actions/lucee/script-runner/main/lucee-download-cache
           key: lucee-downloads
+
       - name: Load Lucee and extensions with LUCEE_ENABLE_BUNDLE_DOWNLOAD disabled
         uses: lucee/script-runner@main
         with:
@@ -51,11 +55,17 @@ jobs:
         env:
           LUCEE_CLI_PRINTEXCEPTIONS: TRUE
           LUCEE_ENABLE_BUNDLE_DOWNLOAD: FALSE
-          SERVERADMINPASSWORD: ${{ secrets.SERVERADMIN_PASSWORD }}
-          # LUCEE_ADMIN_DEFAULT_PASSWORD: password
-          # LUCEE_ADMIN_PASSWORD: password
+          SERVERADMINPASSWORD: ${{ secrets.SERVERADMIN_PASSWORD }}  # Make sure the secret is correctly set in GitHub Secrets
+
       - name: Check environment variables (debug)
-        run: echo "SERVERADMINPASSWORD is set: $SERVERADMINPASSWORD"
+        run: |
+          echo "Checking if SERVERADMINPASSWORD is set"
+          if [ -z "$SERVERADMINPASSWORD" ]; then
+            echo "SERVERADMINPASSWORD is not set!"
+          else
+            echo "SERVERADMINPASSWORD is set correctly."
+          fi
+
       - name: Debug Server Logs
         run: |
           echo "------deploy.log----------"
