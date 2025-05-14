@@ -46,17 +46,18 @@ jobs:
         uses: lucee/script-runner@main
         with:
           webroot: ${{ github.workspace }}/custom/rest/test
-          execute: /index.cfm
+          execute: |
+            configImport(expandPath('./config.xml'));
+            /index.cfm
           luceeVersionQuery: ${{ matrix.luceeVersion }}
         env:
           LUCEE_CLI_PRINTEXCEPTIONS: TRUE
           LUCEE_ENABLE_BUNDLE_DOWNLOAD: FALSE
-          LUCEE_ADMIN_DEFAULT_PASSWORD: webweb
-          LUCEE_ADMIN_PASSWORD: webweb
+          LUCEE_ADMIN_DEFAULT_PASSWORD: password
+          LUCEE_ADMIN_PASSWORD: password
       - name: Debug Server Logs
         run: |
           echo "------deploy.log----------"
           cat express/lucee-server/context/logs/deploy.log
           echo "------exception.log----------"
           cat express/lucee-server/context/logs/exception.log
-  
