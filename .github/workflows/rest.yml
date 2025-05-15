@@ -50,7 +50,7 @@ jobs:
         uses: lucee/script-runner@main
         with:
           webroot: ${{ github.workspace }}/custom/rest/
-          execute: /index.cfm
+          execute: /rest/test/ext
           luceeVersionQuery: ${{ matrix.luceeVersion }}
         env:
           LUCEE_CLI_PRINTEXCEPTIONS: TRUE
