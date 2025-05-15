@@ -1,3 +1,3 @@
 <cfscript>
-System.out.println("==================test=================");
+writeOutput("==================test=================");
 </cfscript>
