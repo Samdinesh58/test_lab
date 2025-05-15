@@ -1,7 +1,7 @@
 component {
   function onApplicationStart() {
     // Retrieve GitHub secret from environment variable
-    request.SERVERADMINPASSWORD = "password";
+    request.SERVERADMINPASSWORD = "admin";
     
     // Initialize REST app
     RestInitApplication(
