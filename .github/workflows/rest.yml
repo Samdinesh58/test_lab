@@ -49,7 +49,7 @@ jobs:
       - name: Load Lucee and extensions with LUCEE_ENABLE_BUNDLE_DOWNLOAD disabled
         uses: lucee/script-runner@main
         with:
-          webroot: ${{ github.workspace }}/custom/rest/
+          webroot: ${{ github.workspace }}/custom/first/
           execute: /index.cfm
           luceeVersionQuery: ${{ matrix.luceeVersion }}
         env:
