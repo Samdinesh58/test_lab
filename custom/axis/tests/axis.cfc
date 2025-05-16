@@ -1,4 +1,4 @@
-component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
+component extends="org.lucee.cfml.test.LuceeTestCase" labels="axis" {
 
 	variables.localhost="http://127.0.0.1:8888";
 
