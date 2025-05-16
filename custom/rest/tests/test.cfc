@@ -5,7 +5,7 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
     function run( testResults , testBox ) {
         describe( title="rest mapping tests", body=function() {
             it(title="rest mapping", body = function( currentSpec ) {
-                RestInitApplication(expandPath("./"), '/test', false, "password");
+                RestInitApplication(expandPath("./"), '/test', false, "admin");
                 http url="#localhost#/rest/test/test/check" result="local.result";
                 expect( local.result.filecontent ).toBe('"success"');
                 expect( local.result.status_code ).toBe(200);
