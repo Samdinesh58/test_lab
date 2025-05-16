@@ -73,7 +73,7 @@ jobs:
           execute: /bootstrap-tests.cfm
           luceeVersionQuery: ${{ matrix.luceeVersion }}
         env:
-          testLabels: axis
+          testLabels: rest
           testAdditional: ${{ github.workspace }}/custom/rest/
       - name: Debug Express exception.log
         if: failure()
