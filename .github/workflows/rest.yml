@@ -39,7 +39,7 @@ jobs:
       - name: Start Lucee Server
         run: |
           echo "Starting Lucee server..."
-          cd lucee-express/lucee-express-* # Adjust this path if necessary
+          cd lucee-express/lucee-express* # Adjust this path if necessary
           ./start.sh &
 
       - name: Wait for Server to Start
