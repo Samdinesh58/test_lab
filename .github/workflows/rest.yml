@@ -66,6 +66,11 @@ jobs:
         with:
           repository: lucee/lucee
           path: lucee
+      - name: Debug Test Directory
+        run: |
+          echo "Listing test directory contents..."
+          ls -R ${{ github.workspace }}/lucee/test
+          ls -R ${{ github.workspace }}/custom/rest
       - name: Run Lucee Test Suite
         uses: lucee/script-runner@main
         with:
