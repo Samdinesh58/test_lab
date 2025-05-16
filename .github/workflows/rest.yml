@@ -1,7 +1,13 @@
-name: test rest mapping
+name: test rest
 
 on:
   workflow_dispatch:
+    inputs:
+      lucee_versions:
+        required: false
+        description: Lucee Versions (json)
+        default: '[ "7.0/snapshot/jar", "6.2/snapshot/jar", "6.2/stable/jar" ]'
+        type: string
   workflow_call:
 
 jobs:
@@ -9,59 +15,67 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
+      max-parallel: 1
       matrix:
-        luceeVersion:
-          [
-            7.0/snapshot/jar,
-            6.2/snapshot/jar,
-            6.2/stable/jar,
-          ]
+        luceeVersion: ${{ fromJSON(github.event.inputs.lucee_versions) }}
         javaVersion: [ 21 ]
     env:
-      luceeVersionQuery: ${{ matrix.luceeVersion }}
-      compile: ${{ github.event.inputs.compile }}
+        luceeVersionQuery: ${{ matrix.luceeVersion }}
+        compile: ${{ github.event.inputs.compile }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
-      - name: Set up JDK ${{ matrix.javaVersion }}
+      - name: Set up JDK ${{matrix.javaVersion}}
         uses: actions/setup-java@v4
         with:
-          java-version: ${{ matrix.javaVersion }}
+          java-version: ${{matrix.javaVersion}}
           distribution: "temurin"
-
       - name: Cache Maven packages
         uses: actions/cache@v4
         with:
           path: ~/.m2
           key: maven-cache
-
-      - name: Download and Extract Lucee Express
+      - name: Cache Lucee files
+        uses: actions/cache@v4
+        if: always()
+        with:
+          path: /home/runner/work/_actions/lucee/script-runner/main/lucee-download-cache
+          key: lucee-downloads
+      - name: Cache Lucee Express files
+        uses: actions/cache@v4
+        if: always()
+        with:
+          path: /home/runner/work/lucee-testlab/lucee-testlab/lucee-express-cache/
+          key: lucee-express
+      - name: Download Lucee Express
+        uses: lucee/script-runner@main
+        with:
+          webroot: ${{ github.workspace }}/custom/axis
+          execute: /fetch-express.cfm
+          luceeVersionQuery: ${{ matrix.luceeVersion }}
+        env:
+          fetch: ${{ matrix.luceeVersion }}
+      - name: Run Express
         run: |
-          echo "Downloading Lucee Express..."
-          curl -L -o lucee-express.zip https://cdn.lucee.org/lucee-express.zip
-          echo "Extracting Lucee Express..."
-          unzip lucee-express.zip -d lucee-express
-
-      - name: Debug Directory Structure
+          ./express/bin/startup.sh
+          echo "sleeping for 10s to allow lucee to deploy and startup...."
+          sleep 10
+          curl http://127.0.0.1:8888
+      - name: Checkout Lucee
+        uses: actions/checkout@v4
+        with:
+          repository: lucee/lucee
+          path: lucee
+      - name: Run Lucee Test Suite
+        uses: lucee/script-runner@main
+        with:
+          webroot: ${{ github.workspace }}/lucee/test
+          execute: /bootstrap-tests.cfm
+          luceeVersionQuery: ${{ matrix.luceeVersion }}
+        env:
+          testLabels: axis
+          testAdditional: ${{ github.workspace }}/custom/rest/
+      - name: Debug Express exception.log
+        if: failure()
         run: |
-          echo "Listing directory contents..."
-          ls -R lucee-express
-
-      - name: Start Lucee Server
-        run: |
-          echo "Starting Lucee server..."
-          cd lucee-express/lucee-express-* # Adjust this path if necessary
-          ./start.sh &
-
-      - name: Wait for Server to Start
-        run: sleep 20
-
-      - name: Verify Server is Running
-        run: |
-          echo "Checking if server is running..."
-          curl -I http://127.0.0.1:8888 || exit 1
-
-      - name: Debug Server Logs
-        run: |
-          echo "------deploy.log----------"
+            echo "------deploy.log----------"
