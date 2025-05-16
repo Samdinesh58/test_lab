@@ -75,6 +75,7 @@ jobs:
         env:
           testLabels: rest
           testAdditional: ${{ github.workspace }}/custom/rest/
+          execute: /index.cfm
       - name: Debug Express exception.log
         if: failure()
         run: |
