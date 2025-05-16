@@ -1,14 +1,12 @@
 component {
-  function onApplicationStart() {
-    // Retrieve GitHub secret from environment variable
-    request.SERVERADMINPASSWORD = "admin";
-    
-    // Initialize REST app
-    RestInitApplication(
-      dirpath = expandPath("test/"),
-      serviceMapping = "test",
-      default = true,
-      password = request.SERVERADMINPASSWORD
-    );
-  }
+
+    this.name = "test";
+    this.sessionManagement = true;
+    function onApplicationStart() {
+        // Initialize the REST 
+        
+        request.SERVERADMINPASSWORD = "admin";
+        RestInitApplication(dirpath=expandPath('/test'), serviceMapping='test', default="true", password=request.SERVERADMINPASSWORD);
+    }
+
 }
