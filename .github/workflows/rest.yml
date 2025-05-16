@@ -35,13 +35,6 @@ jobs:
         with:
           path: ~/.m2
           key: maven-cache
-
-      - name: Start Lucee Server
-        run: |
-          echo "Starting Lucee server..."
-          cd lucee-express/lucee-express* # Adjust this path if necessary
-          ./start.sh &
-
       - name: Wait for Server to Start
         run: sleep 20
 
