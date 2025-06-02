@@ -12,14 +12,14 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 		}
 		return true;
 	}
-    if (!checkPassword() ) {
-		systemOutput( "try updatePassword", true );
-		admin
-			action="updatePassword"
-			type="server"
-			oldPassword=""
-			newPassword="#variables.adminPassword#";
-	}
+    // if (!checkPassword() ) {
+	// 	systemOutput( "try updatePassword", true );
+	// 	admin
+	// 		action="updatePassword"
+	// 		type="server"
+	// 		oldPassword=""
+	// 		newPassword="#variables.adminPassword#";
+	// }
 
 	if (!checkPassword() ) {
 		systemOutput( "try writing password to #expandPath('{lucee-server}/password.txt')#", true );
