@@ -77,3 +77,9 @@ jobs:
           testAdditional: ${{ github.workspace }}/custom/rest/tests
           LUCEE_ADMIN_PASSWORD: admin
           LUCEE_ADMIN_DEFAULT_PASSWORD: admin
+      - name: Cache Lucee Express files
+        uses: actions/cache@v4
+        if: false  # disables cache for this run
+        with:
+          path: /home/runner/work/lucee-testlab/lucee-testlab/lucee-express-cache/
+          key: lucee-express
