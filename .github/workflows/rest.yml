@@ -60,7 +60,10 @@ jobs:
           ./express/bin/startup.sh
           echo "sleeping for 10s to allow lucee to deploy and startup...."
           sleep 10
-          curl http://127.0.0.1:8888
+          curl http://127.0.0.1:
+        env:
+          LUCEE_ADMIN_PASSWORD: password
+          LUCEE_ADMIN_DEFAULT_PASSWORD: password
       - name: Checkout Lucee
         uses: actions/checkout@v4
         with:
@@ -75,8 +78,6 @@ jobs:
         env:
           testLabels: rest
           testAdditional: ${{ github.workspace }}/custom/rest/tests
-          LUCEE_ADMIN_PASSWORD: admin
-          LUCEE_ADMIN_DEFAULT_PASSWORD: admin
       - name: Cache Lucee Express files
         uses: actions/cache@v4
         if: false  # disables cache for this run
