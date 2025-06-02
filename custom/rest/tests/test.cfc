@@ -6,21 +6,26 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 		try {
 			admin action="connect"
 					type="server"
-					password="admin";
+					password="password";
 		} catch ( e ) {
             systemOutput( "password not set yet", true );
 			return false;
 		}
 		return true;
 	}
-    // if (!checkPassword() ) {
-	// 	systemOutput( "try updatePassword", true );
-	// 	admin
-	// 		action="updatePassword"
-	// 		type="server"
-	// 		oldPassword=""
-	// 		newPassword="#variables.adminPassword#";
-	// }
+    if (!checkPassword() ) {
+		systemOutput( "try updatePassword", true );
+		try{
+        admin
+			action="updatePassword"
+			type="server"
+			oldPassword=""
+			newPassword="admin";
+        } catch( e ) {
+            systemOutput( "updatePassword failed: #e.message#", true );
+        }
+      
+	}
 
 	if (!checkPassword() ) {
 		systemOutput( "try writing password to #expandPath('{lucee-server}/password.txt')#", true );
