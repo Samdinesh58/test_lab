@@ -14,7 +14,7 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 	}
     if (!checkPassword() ) {
 		systemOutput( "try updatePassword", true );
-		dmin
+		admin
 			action="updatePassword"
 			type="server"
 			oldPassword=""
