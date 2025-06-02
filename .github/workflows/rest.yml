@@ -81,6 +81,8 @@ jobs:
         if: failure()
         run: |
             echo "------deploy.log----------"
-            cat express/lucee-server/context/logs/deploy.log
+            cat express/lucee-server/context/logs/deploy.log || true
             echo "------exception.log----------"
-            cat express/lucee-server/context/logs/exception.log
+            cat express/lucee-server/context/logs/exception.log || true
+            echo "------listing log dirs----------"
+            ls -lR express || true
