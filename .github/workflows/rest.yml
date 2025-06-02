@@ -75,3 +75,5 @@ jobs:
         env:
           testLabels: rest
           testAdditional: ${{ github.workspace }}/custom/rest/tests
+          LUCEE_ADMIN_PASSWORD: admin
+          LUCEE_ADMIN_DEFAULT_PASSWORD: admin
