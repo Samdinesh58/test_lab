@@ -77,12 +77,4 @@ jobs:
           testAdditional: ${{ github.workspace }}/custom/rest/tests
           LUCEE_ADMIN_PASSWORD: admin123
           LUCEE_ADMIN_DEFAULT_PASSWORD: admin123
-      - name: Debug Express exception.log
-        if: failure()
-        run: |
-            echo "------deploy.log----------"
-            cat express/lucee-server/context/logs/deploy.log || true
-            echo "------exception.log----------"
-            cat express/lucee-server/context/logs/exception.log || true
-            echo "------listing log dirs----------"
-            ls -lR express || true
+      
