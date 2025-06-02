@@ -6,8 +6,9 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 		try {
 			admin action="connect"
 					type="server"
-					password=variables.adminPassword;
+					password="admin";
 		} catch ( e ) {
+            systemOutput( "password not set yet", true );
 			return false;
 		}
 		return true;
