@@ -13,19 +13,19 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 		}
 		return true;
 	}
-    if (!checkPassword() ) {
-		systemOutput( "try updatePassword", true );
-		try{
-        admin
-			action="updatePassword"
-			type="server"
-			oldPassword=""
-			newPassword="admin";
-        } catch( e ) {
-            systemOutput( "updatePassword failed: #e.message#", true );
-        }
+    // if (!checkPassword() ) {
+	// 	systemOutput( "try updatePassword", true );
+	// 	try{
+    //     admin
+	// 		action="updatePassword"
+	// 		type="server"
+	// 		oldPassword=""
+	// 		newPassword="admin";
+    //     } catch( e ) {
+    //         systemOutput( "updatePassword failed: #e.message#", true );
+    //     }
       
-	}
+	// }
 
 	if (!checkPassword() ) {
 		systemOutput( "try writing password to #expandPath('{lucee-server}/password.txt')#", true );
