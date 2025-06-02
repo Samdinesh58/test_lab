@@ -60,7 +60,7 @@ jobs:
           ./express/bin/startup.sh
           echo "sleeping for 10s to allow lucee to deploy and startup...."
           sleep 10
-          curl http://127.0.0.1:
+          curl http://127.0.0.1:8888
         env:
           LUCEE_ADMIN_PASSWORD: password
           LUCEE_ADMIN_DEFAULT_PASSWORD: password
