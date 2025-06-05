@@ -72,10 +72,6 @@ jobs:
       - name: Create context directory for .CFConfig
         run: |
           mkdir -p /home/runner/work/_actions/lucee/script-runner/main/temp/lucee/lucee-server/context/
-      - name: Prepare Lucee config
-        run: |
-          cp ${{ github.workspace }}/default-cfconfig.json ${{ github.workspace }}/lucee/test/.cfconfig.json
-      - name: Run Lucee Test Suite
         uses: lucee/script-runner@main
         with:
           webroot: ${{ github.workspace }}/lucee/test
