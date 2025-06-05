@@ -69,9 +69,6 @@ jobs:
         with:
           repository: lucee/lucee
           path: lucee
-      - name: Create context directory for .CFConfig
-        run: |
-          mkdir -p /home/runner/work/_actions/lucee/script-runner/main/temp/lucee/lucee-server/context/
       - name: Run Lucee Test Suite
         uses: lucee/script-runner@main
         with:
