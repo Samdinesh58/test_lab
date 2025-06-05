@@ -55,6 +55,9 @@ jobs:
           luceeVersionQuery: ${{ matrix.luceeVersion }}
         env:
           fetch: ${{ matrix.luceeVersion }}
+      - name: Create express logs directory
+        run: |
+          mkdir -p ./express/logs
       - name: Run Express
         run: |
           ./express/bin/startup.sh
@@ -62,8 +65,8 @@ jobs:
           sleep 10
           curl http://127.0.0.1:8888
         env:
-          LUCEE_ADMIN_PASSWORD: password
-          LUCEE_ADMIN_DEFAULT_PASSWORD: password
+          LUCEE_ADMIN_PASSWORD: admin
+          LUCEE_ADMIN_DEFAULT_PASSWORD: admin
       - name: Checkout Lucee
         uses: actions/checkout@v4
         with:
