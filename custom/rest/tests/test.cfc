@@ -1,7 +1,7 @@
 component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 
     variables.localhost="http://127.0.0.1:8888";
-    variables.adminPassword = "password";
+    variables.adminPassword = "admin";
     function checkPassword() {
 		try {
 			admin action="connect"
