@@ -50,7 +50,6 @@ jobs:
       - name: Download Lucee Express
         uses: lucee/script-runner@main
         with:
-          webroot: ${{ github.workspace }}/custom/axis
           execute: /fetch-express.cfm
           luceeVersionQuery: ${{ matrix.luceeVersion }}
         env:
@@ -60,15 +59,17 @@ jobs:
           mkdir -p ./express/logs
       - name: Run Express
         run: |
-          export LUCEE_EXTENSIONS="DF28D0A4-6748-44B9-A2FDC12E4E2E4D38"
-          printenv LUCEE_EXTENSIONS
           ./express/bin/startup.sh
           echo "sleeping for 10s to allow lucee to deploy and startup...."
           sleep 10
           curl http://127.0.0.1:8888
         env:
-          LUCEE_ADMIN_PASSWORD: admin
-          LUCEE_ADMIN_DEFAULT_PASSWORD: admin
+          LUCEE_ADMIN_PASSWORD: password
+          LUCEE_ADMIN_DEFAULT_PASSWORD: password
+      - name: Create password.txt in lucee-server context
+        run: |
+          mkdir -p ${{ github.workspace }}/express/lucee-server/context
+          echo "password" > ${{ github.workspace }}/express/lucee-server/context/password.txt
       - name: Checkout Lucee
         uses: actions/checkout@v4
         with:
