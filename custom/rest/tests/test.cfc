@@ -12,31 +12,21 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 			return false;
 		}
         systemOutput( "password now set", true );
-		return true;
+			return true;
 	}
-    // if (!checkPassword() ) {
-	// 	systemOutput( "try updatePassword", true );
-	// 	try{
-    //     admin
-	// 		action="updatePassword"
-	// 		type="server"
-	// 		oldPassword=""
-	// 		newPassword="password";
-    //     } catch( e ) {
-    //         systemOutput( "updatePassword failed: #e.message#", true );
-    //     }
+    if (!checkPassword() ) {
+		systemOutput( "try updatePassword", true );
+		try{
+        admin
+			action="updatePassword"
+			type="server"
+			oldPassword=""
+			newPassword="#variables.adminPassword#";
+        } catch( e ) {
+            systemOutput( "updatePassword failed: #e.message#", true );
+        }
       
-	// }
-
-	// if (!checkPassword() ) {
-	// 	systemOutput( "try writing password to #expandPath('{lucee-server}/password.txt')#", true );
-	// 	fileWrite( expandPath('{lucee-server}/password.txt'), variables.adminPassword );
-
-	// 	systemOutput( "check password", true );
-	// 	admin
-	// 		action="checkPassword"
-	// 		type="server";	
-	// }
+	}
     function run( testResults , testBox ) {
         describe( title="rest mapping tests", body=function() {
             it(title="rest mapping", body = function( currentSpec ) {
