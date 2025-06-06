@@ -50,6 +50,7 @@ jobs:
       - name: Download Lucee Express
         uses: lucee/script-runner@main
         with:
+          webroot: ${{ github.workspace }}/custom/axis
           execute: /fetch-express.cfm
           luceeVersionQuery: ${{ matrix.luceeVersion }}
         env:
