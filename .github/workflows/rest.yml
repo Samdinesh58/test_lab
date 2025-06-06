@@ -68,8 +68,8 @@ jobs:
           LUCEE_ADMIN_DEFAULT_PASSWORD: password
       - name: Create password.txt in lucee-server context
         run: |
-          mkdir -p ${{ github.workspace }}/express/lucee-server/context
-          echo "password" > ${{ github.workspace }}/express/lucee-server/context/password.txt
+          mkdir -p ${{ github.workspace }}/lucee-server/context
+          echo "password" > ${{ github.workspace }}/lucee-server/context/password.txt
       - name: Checkout Lucee
         uses: actions/checkout@v4
         with:
