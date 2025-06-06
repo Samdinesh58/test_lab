@@ -50,11 +50,22 @@ jobs:
       - name: Download Lucee Express
         uses: lucee/script-runner@main
         with:
-          webroot: ${{ github.workspace }}/custom/rest
+          webroot: ${{ github.workspace }}/custom/axis
           execute: /fetch-express.cfm
           luceeVersionQuery: ${{ matrix.luceeVersion }}
         env:
           fetch: ${{ matrix.luceeVersion }}
+
+      # --- Add this step to create password.txt ---
+      - name: Set Lucee admin password
+        run: |
+          # Find the Lucee server context directory
+          # This assumes express is extracted to ./express
+          # The context dir is usually express/lucee-server/context
+          mkdir -p ./express/lucee-server/context
+          echo "password" > ./express/lucee-server/context/password.txt
+        shell: bash
+
       - name: Create express logs directory
         run: |
           mkdir -p ./express/logs
