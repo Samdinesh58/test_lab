@@ -20,55 +20,42 @@ jobs:
         luceeVersion: ${{ fromJSON(github.event.inputs.lucee_versions) }}
         javaVersion: [ 21 ]
     env:
-      luceeVersionQuery: ${{ matrix.luceeVersion }}
-      compile: ${{ github.event.inputs.compile }}
-      # Set the admin password globally for all steps (optional, can also be set per-step)
-      LUCEE_ADMIN_PASSWORD: password
-      LUCEE_ADMIN_DEFAULT_PASSWORD: password
-
+        luceeVersionQuery: ${{ matrix.luceeVersion }}
+        compile: ${{ github.event.inputs.compile }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
-      - name: Set up JDK ${{ matrix.javaVersion }}
+      - name: Set up JDK ${{matrix.javaVersion}}
         uses: actions/setup-java@v4
         with:
-          java-version: ${{ matrix.javaVersion }}
+          java-version: ${{matrix.javaVersion}}
           distribution: "temurin"
-
       - name: Cache Maven packages
         uses: actions/cache@v4
         with:
           path: ~/.m2
           key: maven-cache
-
       - name: Cache Lucee files
         uses: actions/cache@v4
         if: always()
         with:
           path: /home/runner/work/_actions/lucee/script-runner/main/lucee-download-cache
           key: lucee-downloads
-
       - name: Cache Lucee Express files
         uses: actions/cache@v4
         if: always()
         with:
           path: /home/runner/work/lucee-testlab/lucee-testlab/lucee-express-cache/
           key: lucee-express
-
       - name: Download Lucee Express
         uses: lucee/script-runner@main
         with:
-          webroot: ${{ github.workspace }}/custom/axis
-          execute: /fetch-express.cfm
           luceeVersionQuery: ${{ matrix.luceeVersion }}
         env:
           fetch: ${{ matrix.luceeVersion }}
-
       - name: Create express logs directory
         run: |
           mkdir -p ./express/logs
-
       - name: Run Express
         run: |
           ./express/bin/startup.sh
@@ -78,13 +65,11 @@ jobs:
         env:
           LUCEE_ADMIN_PASSWORD: password
           LUCEE_ADMIN_DEFAULT_PASSWORD: password
-
       - name: Checkout Lucee
         uses: actions/checkout@v4
         with:
           repository: lucee/lucee
           path: lucee
-
       - name: Run Lucee Test Suite
         uses: lucee/script-runner@main
         with:
@@ -94,9 +79,6 @@ jobs:
         env:
           testLabels: rest
           testAdditional: ${{ github.workspace }}/custom/rest/tests
-          LUCEE_ADMIN_PASSWORD: password
-          LUCEE_ADMIN_DEFAULT_PASSWORD: password
-
       - name: Cache Lucee Express files
         uses: actions/cache@v4
         if: false  # disables cache for this run
