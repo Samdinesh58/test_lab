@@ -82,4 +82,3 @@ jobs:
         run: |
             echo "------deploy.log----------"
             echo "------exception.log----------"
-            cat express/lucee-server/context/logs/exception.log
